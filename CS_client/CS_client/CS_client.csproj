@@ -95,7 +95,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>C:\Python27\python "$(SolutionDir)..\tools\playgame.py" -So --engine_seed 42 --player_seed 42 --end_wait=0.25 --verbose --log_dir game_logs --turns 1000 --map_file "$(SolutionDir)..\tools\maps\maze\maze_04p_01.map" %25* $(TargetPath) $(TargetPath) $(TargetPath) $(TargetPath) | "C:\Program Files (x86)\Java\jre6\bin\java" -jar "$(SolutionDir)..\tools\visualizer.jar"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -10,4 +10,16 @@
     <FallbackCulture>en-US</FallbackCulture>
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Windows\System32\cmd.exe</StartProgram>
+    <StartArguments>/c C:\python27\python tools\playgame.py -So --map_file "tools\maps\maze\maze_04p_01.map" --engine_seed 42 --player_seed 42 --end_wait=0.25 --verbose --log_dir game_logs --turns 1000 CS_client\CS_client\bin\Debug\CS_client CS_client\CS_client\bin\Debug\CS_client CS_client\CS_client\bin\Debug\CS_client CS_client\CS_client\bin\Debug\CS_client  | "C:\Program Files (x86)\Java\jre6\bin\java" -jar tools\visualizer.jar</StartArguments>
+    <StartWorkingDirectory>..\..\..\..\</StartWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Windows\System32\cmd.exe</StartProgram>
+    <StartArguments>/c C:\python27\python tools\playgame.py -So --map_file "tools\maps\maze\maze_04p_01.map" --engine_seed 42 --player_seed 42 --end_wait=0.25 --verbose --log_dir game_logs --turns 1000 CS_client\CS_client\bin\Debug\CS_client CS_client\CS_client\bin\Debug\CS_client CS_client\CS_client\bin\Debug\CS_client CS_client\CS_client\bin\Debug\CS_client  | "C:\Program Files (x86)\Java\jre6\bin\java" -jar tools\visualizer.jar</StartArguments>
+    <StartWorkingDirectory>..\..\..\..\</StartWorkingDirectory>
+  </PropertyGroup>
 </Project>
