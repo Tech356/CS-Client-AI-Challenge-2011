@@ -6,7 +6,7 @@ namespace Ants {
 	class MyBot : Bot {
 
 		// DoTurn is run once per turn
-		public override void DoTurn (IGameState state) {
+		public override void DoTurn (GameState state) {
 
 			// loop through all my ants and try to give them orders
 			foreach (Ant ant in state.MyAnts) {

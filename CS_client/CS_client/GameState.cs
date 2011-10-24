@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Ants {
 	
-	public class GameState : IGameState {
+	public class GameState {
 		
 		public int Width { get; private set; }
 		public int Height { get; private set; }
