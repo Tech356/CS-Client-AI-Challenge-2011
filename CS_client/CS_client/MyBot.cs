@@ -3,13 +3,9 @@ using System.Collections.Generic;
 
 namespace Ants
 {
-
     class MyBot : Bot
     {
-        public override void Init()
-        {
-
-        }
+        public override void Init() { }
 
         // DoTurn is run once per turn
         public override void DoTurn(GameState state)
@@ -17,19 +13,17 @@ namespace Ants
             // loop through all my ants and try to give them orders
             foreach (Ant ant in state.MyAnts)
             {
-
                 // try all the directions
                 foreach (Direction direction in Enum.GetValues(typeof(Direction)))
                 {
-
                     // GetDestination will wrap around the map properly
                     // and give us a new location
-                    Location newLoc = state.GetDestination(ant, direction);
+                    Location newLoc = state.GetDestination(ant.Location, direction);
 
                     // GetIsPassable returns true if the location is land
                     if (state.GetIsPassable(newLoc))
                     {
-                        IssueOrder(ant, direction);
+                        ant.Move(direction);
                         // stop now, don't give 1 and multiple orders
                         break;
                     }
@@ -41,12 +35,9 @@ namespace Ants
 
         }
 
-
         public static void Main(string[] args)
         {
             Engine.PlayGame(new MyBot());
         }
-
     }
-
 }

@@ -161,6 +161,5 @@ namespace Ants
         {
             System.Console.Out.WriteLine(GO);
         }
-
     }
 }

@@ -5,14 +5,13 @@ namespace Ants
 {
     public class GameState
     {
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        public int MapWidth { get; private set; }
+        public int MapHeight { get; private set; }
 
         public int TotalNumberOfTurns { get; private set; }
         public int CurrentTurnNumber { get; private set; }
-        public int LoadTime { get; private set; }
-        public int TurnTime { get; private set; }
+        public int MaxAllowedLoadTime { get; private set; }
+        public int MaxAllowedTurnTime { get; private set; }
 
         private DateTime turnStart;
         public int TimeRemaining
@@ -20,7 +19,7 @@ namespace Ants
             get
             {
                 TimeSpan timeSpent = DateTime.Now - turnStart;
-                return TurnTime - timeSpent.Milliseconds;
+                return MaxAllowedTurnTime - timeSpent.Milliseconds;
             }
         }
 
@@ -33,53 +32,35 @@ namespace Ants
         public List<AntHill> MyHills { get; private set; }
         public List<Ant> EnemyAnts { get; private set; }
         public List<AntHill> EnemyHills { get; private set; }
-        public List<Location> DeadTiles { get; private set; }
-        public List<Location> FoodTiles { get; private set; }
+        public List<Food> FoodTiles { get; private set; }
 
-        public Tile this[Location location]
+        public Tile[,] map { get; private set; }
+
+        public GameState(int width, int height, int totalNumberOfTurns, int turntime, int loadtime,
+                         int viewradius2, int attackradius2, int spawnradius2, int playerSeed)
         {
-            get { return this.map[location.Row, location.Col]; }
-        }
+            this.MapWidth = width;
+            this.MapHeight = height;
 
-        public Tile this[int row, int col]
-        {
-            get { return this.map[row, col]; }
-        }
+            this.TotalNumberOfTurns = totalNumberOfTurns;
+            this.MaxAllowedLoadTime = loadtime;
+            this.MaxAllowedTurnTime = turntime;
 
-        private Tile[,] map;
+            this.ViewRadius2 = viewradius2;
+            this.AttackRadius2 = attackradius2;
+            this.SpawnRadius2 = spawnradius2;
+            this.PlayerSeed = playerSeed;
 
-        public GameState(int width, int height, int totalNumberOfTurns,
-                          int turntime, int loadtime,
-                          int viewradius2, int attackradius2, int spawnradius2, int playerSeed)
-        {
-
-            Width = width;
-            Height = height;
-
-            TotalNumberOfTurns = totalNumberOfTurns;
-            LoadTime = loadtime;
-            TurnTime = turntime;
-
-            ViewRadius2 = viewradius2;
-            AttackRadius2 = attackradius2;
-            SpawnRadius2 = spawnradius2;
-            PlayerSeed = playerSeed;
-
-            MyAnts = new List<Ant>();
-            MyHills = new List<AntHill>();
-            EnemyAnts = new List<Ant>();
-            EnemyHills = new List<AntHill>();
-            DeadTiles = new List<Location>();
-            FoodTiles = new List<Location>();
+            this.MyAnts = new List<Ant>();
+            this.MyHills = new List<AntHill>();
+            this.EnemyAnts = new List<Ant>();
+            this.EnemyHills = new List<AntHill>();
+            this.FoodTiles = new List<Food>();
 
             map = new Tile[height, width];
             for (int row = 0; row < height; row++)
-            {
                 for (int col = 0; col < width; col++)
-                {
-                    map[row, col] = Tile.Land;
-                }
-            }
+                    map[row, col] = new Tile(row, col, TileType.Unseen);
         }
 
         #region State mutators
@@ -88,22 +69,12 @@ namespace Ants
             // start timer
             turnStart = DateTime.Now;
 
-            // clear ant data
-            foreach (Location loc in MyAnts) map[loc.Row, loc.Col] = Tile.Land;
-            foreach (Location loc in MyHills) map[loc.Row, loc.Col] = Tile.Land;
-            foreach (Location loc in EnemyAnts) map[loc.Row, loc.Col] = Tile.Land;
-            foreach (Location loc in EnemyHills) map[loc.Row, loc.Col] = Tile.Land;
-            foreach (Location loc in DeadTiles) map[loc.Row, loc.Col] = Tile.Land;
+            // dead ants
+            for (int i = MyAnts.Count - 1; i >= 0; i--) if (!MyAnts[i].isAlive) MyAnts.RemoveAt(i);
 
-            MyHills.Clear();
-            MyAnts.Clear();
-            EnemyHills.Clear();
             EnemyAnts.Clear();
-            DeadTiles.Clear();
-
-            // set all known food to unseen
-            foreach (Location loc in FoodTiles) map[loc.Row, loc.Col] = Tile.Land;
             FoodTiles.Clear();
+            //MAYBE: Maybe we should set these to Stale so we have an idea of where things are?
         }
 
         public void SetTurn(int turnNumber)
@@ -113,60 +84,81 @@ namespace Ants
 
         public void AddAnt(int row, int col, int team)
         {
-            map[row, col] = Tile.Ant;
+            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            for (int i = 0; i < objects.Length; i++)
+            {
+                Ant a = objects[i] as Ant;
+                if (a != null)
+                {
+                    a.StaleLength = 0;
+                    return;
+                }
+            }
 
-            Ant ant = new Ant(row, col, team);
+            Ant newAnt = new Ant(row, col, team);
             if (team == 0)
-            {
-                MyAnts.Add(ant);
-            }
+                MyAnts.Add(newAnt);
             else
-            {
-                EnemyAnts.Add(ant);
-            }
+                EnemyAnts.Add(newAnt);
         }
 
         public void AddFood(int row, int col)
         {
-            map[row, col] = Tile.Food;
-            FoodTiles.Add(new Location(row, col));
+            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            for (int i = 0; i < objects.Length; i++)
+            {
+                Food f = objects[i] as Food;
+                if (f != null)
+                    return;
+            }
+
+            FoodTiles.Add(new Food(row, col));
         }
 
         public void RemoveFood(int row, int col)
         {
-            // an ant could move into a spot where a food just was
-            // don't overwrite the space unless it is food
-            if (map[row, col] == Tile.Food)
+            for (int i = 0; i < FoodTiles.Count; i++)
             {
-                map[row, col] = Tile.Land;
+                if (FoodTiles[i].Row == row && FoodTiles[i].Col == col)
+                {
+                    FoodTiles.RemoveAt(i);
+                    break;
+                }
             }
-            FoodTiles.Remove(new Location(row, col));
         }
 
         public void AddWater(int row, int col)
         {
-            map[row, col] = Tile.Water;
+            map[row, col] = new Tile(row, col, TileType.Water);
         }
 
         public void DeadAnt(int row, int col)
         {
-            // food could spawn on a spot where an ant just died
-            // don't overwrite the space unless it is land
-            if (map[row, col] == Tile.Land)
+            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            for (int i = 0; i < objects.Length; i++)
             {
-                map[row, col] = Tile.Dead;
+                Ant a = objects[i] as Ant;
+                if (a != null)
+                {
+                    a.isAlive = false;
+                    return;
+                }
             }
 
-            // but always add to the dead list
-            DeadTiles.Add(new Location(row, col));
+            // ignore unknown dead ants
         }
 
         public void AntHill(int row, int col, int team)
         {
-
-            if (map[row, col] == Tile.Land)
+            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            for (int i = 0; i < objects.Length; i++)
             {
-                map[row, col] = Tile.Hill;
+                AntHill a = objects[i] as AntHill;
+                if (a != null)
+                {
+                    a.StaleLength = 0;
+                    return;
+                }
             }
 
             AntHill hill = new AntHill(row, col, team);
@@ -185,7 +177,7 @@ namespace Ants
         /// <seealso cref="GetIsUnoccupied"/>
         public bool GetIsPassable(Location location)
         {
-            return map[location.Row, location.Col] != Tile.Water;
+            return map[location.Row, location.Col].Type != TileType.Water;
         }
 
         /// <summary>
@@ -195,7 +187,18 @@ namespace Ants
         /// <returns><c>true</c> if the location is passable and does not contain an ant, <c>false</c> otherwise.</returns>
         public bool GetIsUnoccupied(Location location)
         {
-            return GetIsPassable(location) && map[location.Row, location.Col] != Tile.Ant;
+            if (!GetIsPassable(location))
+                return false;
+
+            GameObject[] objects = map[location.Row, location.Col].GetObjectsOnTile(this);
+            for (int i = 0; i < objects.Length; i++)
+            {
+                Ant a = objects[i] as Ant;
+                if (a != null)
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -206,29 +209,13 @@ namespace Ants
         /// <returns>The new location, accounting for wrap around.</returns>
         public Location GetDestination(Location location, Direction direction)
         {
-            Location delta = null;
+            Location delta = Location.GetDelta(direction);
 
-            switch (direction)
-            {
-                case Direction.North:
-                    delta = new Location(-1, 0);
-                    break;
-                case Direction.South:
-                    delta = new Location(1, 0);
-                    break;
-                case Direction.East:
-                    delta = new Location(0, 1);
-                    break;
-                case Direction.West:
-                    delta = new Location(0, -1);
-                    break;
-            }
+            int row = (location.Row + delta.Row) % this.MapHeight;
+            if (row < 0) row += this.MapHeight; // because the modulo of a negative number is negative
 
-            int row = (location.Row + delta.Row) % Height;
-            if (row < 0) row += Height; // because the modulo of a negative number is negative
-
-            int col = (location.Col + delta.Col) % Width;
-            if (col < 0) col += Width;
+            int col = (location.Col + delta.Col) % this.MapWidth;
+            if (col < 0) col += this.MapWidth;
 
             return new Location(row, col);
         }
@@ -239,13 +226,13 @@ namespace Ants
         /// <param name="loc1">The first location to measure with.</param>
         /// <param name="loc2">The second location to measure with.</param>
         /// <returns>The distance between <paramref name="loc1"/> and <paramref name="loc2"/></returns>
-        public int GetDistance(Location loc1, Location loc2)
+        public int GetDistance(Tile loc1, Tile loc2)
         {
             int d_row = Math.Abs(loc1.Row - loc2.Row);
-            d_row = Math.Min(d_row, Height - d_row);
+            d_row = Math.Min(d_row, this.MapHeight - d_row);
 
             int d_col = Math.Abs(loc1.Col - loc2.Col);
-            d_col = Math.Min(d_col, Width - d_col);
+            d_col = Math.Min(d_col, this.MapWidth - d_col);
 
             return d_row + d_col;
         }
@@ -256,37 +243,37 @@ namespace Ants
         /// <param name="loc1">The location to start from.</param>
         /// <param name="loc2">The location to determine directions towards.</param>
         /// <returns>The 1 or 2 closest directions from <paramref name="loc1"/> to <paramref name="loc2"/></returns>
-        public ICollection<Direction> GetDirections(Location loc1, Location loc2)
+        public ICollection<Direction> GetDirections(Tile loc1, Tile loc2)
         {
             List<Direction> directions = new List<Direction>();
 
             if (loc1.Row < loc2.Row)
             {
-                if (loc2.Row - loc1.Row >= Height / 2)
+                if (loc2.Row - loc1.Row >= this.MapHeight / 2)
                     directions.Add(Direction.North);
-                if (loc2.Row - loc1.Row <= Height / 2)
+                if (loc2.Row - loc1.Row <= this.MapHeight / 2)
                     directions.Add(Direction.South);
             }
             if (loc2.Row < loc1.Row)
             {
-                if (loc1.Row - loc2.Row >= Height / 2)
+                if (loc1.Row - loc2.Row >= this.MapHeight / 2)
                     directions.Add(Direction.South);
-                if (loc1.Row - loc2.Row <= Height / 2)
+                if (loc1.Row - loc2.Row <= this.MapHeight / 2)
                     directions.Add(Direction.North);
             }
 
             if (loc1.Col < loc2.Col)
             {
-                if (loc2.Col - loc1.Col >= Width / 2)
+                if (loc2.Col - loc1.Col >= this.MapWidth / 2)
                     directions.Add(Direction.West);
-                if (loc2.Col - loc1.Col <= Width / 2)
+                if (loc2.Col - loc1.Col <= this.MapWidth / 2)
                     directions.Add(Direction.East);
             }
             if (loc2.Col < loc1.Col)
             {
-                if (loc1.Col - loc2.Col >= Width / 2)
+                if (loc1.Col - loc2.Col >= this.MapWidth / 2)
                     directions.Add(Direction.East);
-                if (loc1.Col - loc2.Col <= Width / 2)
+                if (loc1.Col - loc2.Col <= this.MapWidth / 2)
                     directions.Add(Direction.West);
             }
 
