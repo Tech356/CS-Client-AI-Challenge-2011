@@ -172,7 +172,23 @@ namespace Ants {
 		/// <param name="direction">The direction to move.</param>
 		/// <returns>The new location, accounting for wrap around.</returns>
 		public Location GetDestination (Location location, Direction direction) {
-			Location delta = Ants.Aim[direction];
+            Location delta = null;
+
+            switch (direction)
+            {
+                case Direction.North:
+                    delta = new Location(-1, 0);
+                    break;
+                case Direction.South:
+                    delta = new Location(1, 0);
+                    break;
+                case Direction.East:
+                    delta = new Location(0, 1);
+                    break;
+                case Direction.West:
+                    delta = new Location(0, -1);
+                    break;
+            }
 			
 			int row = (location.Row + delta.Row) % Height;
 			if (row < 0) row += Height; // because the modulo of a negative number is negative

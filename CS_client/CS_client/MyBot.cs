@@ -7,12 +7,11 @@ namespace Ants {
 
 		// DoTurn is run once per turn
 		public override void DoTurn (GameState state) {
-
 			// loop through all my ants and try to give them orders
 			foreach (Ant ant in state.MyAnts) {
 				
 				// try all the directions
-				foreach (Direction direction in Ants.Aim.Keys) {
+				foreach (Direction direction in Enum.GetValues(typeof(Direction))) {
 
 					// GetDestination will wrap around the map properly
 					// and give us a new location
@@ -34,7 +33,7 @@ namespace Ants {
 		
 		
 		public static void Main (string[] args) {
-			new Ants().PlayGame(new MyBot());
+			Engine.PlayGame(new MyBot());
 		}
 
 	}
