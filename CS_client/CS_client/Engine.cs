@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace Ants
 {
-
     public static class Engine
     {
         private const string READY = "ready";
@@ -26,7 +25,7 @@ namespace Ants
                     if (line.Equals(READY))
                     {
                         ParseSetup(input);
-                        //bot.Init();
+                        bot.Init();
                         FinishTurn();
                         input.Clear();
                     }

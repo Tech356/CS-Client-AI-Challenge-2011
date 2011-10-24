@@ -4,6 +4,10 @@ using System.Collections.Generic;
 namespace Ants {
 
 	class MyBot : Bot {
+        public override void Init()
+        {
+
+        }
 
 		// DoTurn is run once per turn
 		public override void DoTurn (GameState state) {

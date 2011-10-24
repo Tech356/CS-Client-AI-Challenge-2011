@@ -5,6 +5,8 @@ namespace Ants {
 
 		public abstract void DoTurn(GameState state);
 
+        public abstract void Init();
+
 		protected void IssueOrder(Location loc, Direction direction) {
 			System.Console.Out.WriteLine("o {0} {1} {2}", loc.Row, loc.Col, direction.ToChar());
 		}
