@@ -7,7 +7,9 @@ namespace Ants {
 		
 		public int Width { get; private set; }
 		public int Height { get; private set; }
-		
+
+        public int TotalNumberOfTurns { get; private set; }
+        public int CurrentTurnNumber { get; private set; }
 		public int LoadTime { get; private set; }
 		public int TurnTime { get; private set; }
 		
@@ -22,6 +24,7 @@ namespace Ants {
 		public int ViewRadius2 { get; private set; }
 		public int AttackRadius2 { get; private set; }
 		public int SpawnRadius2 { get; private set; }
+        public int PlayerSeed { get; private set; }
 
 		public List<Ant> MyAnts { get; private set; }
 		public List<AntHill> MyHills { get; private set; }
@@ -40,19 +43,21 @@ namespace Ants {
 		
 		private Tile[,] map;
 		
-		public GameState (int width, int height, 
+		public GameState (int width, int height, int totalNumberOfTurns,
 		                  int turntime, int loadtime, 
-		                  int viewradius2, int attackradius2, int spawnradius2) {
+		                  int viewradius2, int attackradius2, int spawnradius2, int playerSeed) {
 			
 			Width = width;
 			Height = height;
-			
+
+            TotalNumberOfTurns = totalNumberOfTurns;
 			LoadTime = loadtime;
 			TurnTime = turntime;
 			
 			ViewRadius2 = viewradius2;
 			AttackRadius2 = attackradius2;
 			SpawnRadius2 = spawnradius2;
+            PlayerSeed = playerSeed;
 			
 			MyAnts = new List<Ant>();
 			MyHills = new List<AntHill>();
@@ -91,6 +96,11 @@ namespace Ants {
 			foreach (Location loc in FoodTiles) map[loc.Row, loc.Col] = Tile.Land;
 			FoodTiles.Clear();
 		}
+
+        public void SetTurn(int turnNumber)
+        {
+            this.CurrentTurnNumber = turnNumber;
+        }
 
 		public void AddAnt (int row, int col, int team) {
 			map[row, col] = Tile.Ant;
