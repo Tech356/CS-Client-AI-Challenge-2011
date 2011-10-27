@@ -130,17 +130,17 @@ namespace Ants
                             GameState.AddWater(row, col);
                             break;
                         case "d":
-                            GameState.DeadAnt(row, col);
+                            GameState.AddDeadAnt(row, col);
                             break;
                         case "h":
-                            GameState.AntHill(row, col, int.Parse(tokens[3]));
+                            GameState.AddAntHill(row, col, int.Parse(tokens[3]));
                             break;
                         default:
                             throw new Exception("Unknown update input token: '" + tokens[0] + "'");
                     }
                 }
                 else if (tokens[0] == "turn")
-                    GameState.SetTurn(int.Parse(tokens[1]));
+                    GameState.SetCurrentTurnNumber(int.Parse(tokens[1]));
 
                 else
                     throw new Exception("Unknown or invalid update input token: '" + line + "'");

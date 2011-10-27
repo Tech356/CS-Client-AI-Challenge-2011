@@ -8,7 +8,6 @@ namespace Ants
         public static int MapWidth { get; private set; }
         public static int MapHeight { get; private set; }
 
-
         public static int TotalNumberOfTurns { get; private set; }
         public static int CurrentTurnNumber { get; private set; }
         public static void SetTotalNumberOfTurns(int totalNumberOfTurns) { TotalNumberOfTurns = totalNumberOfTurns; }
@@ -94,11 +93,6 @@ namespace Ants
             //MAYBE: Maybe we should set these to Stale so we have an idea of where things are?
         }
 
-        public static void SetTurn(int turnNumber)
-        {
-            CurrentTurnNumber = turnNumber;
-        }
-
         public static void AddAnt(int row, int col, int team)
         {
             GameObject[] objects = map[row, col].GetObjectsOnTile();
@@ -149,7 +143,7 @@ namespace Ants
             map[row, col] = new Tile(row, col, TileType.Water);
         }
 
-        public static void DeadAnt(int row, int col)
+        public static void AddDeadAnt(int row, int col)
         {
             GameObject[] objects = map[row, col].GetObjectsOnTile();
             for (int i = 0; i < objects.Length; i++)
@@ -165,7 +159,7 @@ namespace Ants
             // ignore unknown dead ants
         }
 
-        public static void AntHill(int row, int col, int team)
+        public static void AddAntHill(int row, int col, int team)
         {
             GameObject[] objects = map[row, col].GetObjectsOnTile();
             for (int i = 0; i < objects.Length; i++)
