@@ -10,8 +10,6 @@ namespace Ants
         private const string GO = "go";
         private const string END = "end";
 
-        private static GameState state;
-
         public static void PlayGame(Bot bot)
         {
             List<string> input = new List<string>();
@@ -31,9 +29,8 @@ namespace Ants
                             FinishTurn();
                             break;
                         case GO:
-                            state.StartNewTurn();
                             ParseUpdate(input);
-                            bot.DoTurn(state);
+                            bot.DoTurn();
                             input.Clear();
                             FinishTurn();
                             break;
@@ -59,11 +56,6 @@ namespace Ants
         // parse initial input and setup starting game state
         private static void ParseSetup(List<string> input)
         {
-            int mapWidth = 0, mapHeight = 0;
-            int totalNumberOfTurns = 0, turntime = 0, loadtime = 0;
-            int viewradius2 = 0, attackradius2 = 0, spawnradius2 = 0;
-            int playerSeed = 0;
-
             foreach (string line in input)
             {
                 if (line.Length <= 0) continue;
@@ -74,41 +66,39 @@ namespace Ants
                 switch (key)
                 {
                     case "cols":
-                        mapWidth = int.Parse(tokens[1]);
+                        GameState.SetMapWidth(int.Parse(tokens[1]));
                         break;
                     case "rows":
-                        mapHeight = int.Parse(tokens[1]);
+                        GameState.SetMapHeight(int.Parse(tokens[1]));
                         break;
                     case "turn":
                         // We don't care about the first turn during setup
                         break;
                     case "turns":
-                        totalNumberOfTurns = int.Parse(tokens[1]);
+                        GameState.SetTotalNumberOfTurns(int.Parse(tokens[1]));
                         break;
                     case "turntime":
-                        turntime = int.Parse(tokens[1]);
+                        GameState.SetMaxAllowedTurnTime(int.Parse(tokens[1]));
                         break;
                     case "loadtime":
-                        loadtime = int.Parse(tokens[1]);
+                        GameState.SetMaxAllowedLoadTime(int.Parse(tokens[1]));
                         break;
                     case "viewradius2":
-                        viewradius2 = int.Parse(tokens[1]);
+                        GameState.SetViewRadius2(int.Parse(tokens[1]));
                         break;
                     case "attackradius2":
-                        attackradius2 = int.Parse(tokens[1]);
+                        GameState.SetAttackRadius2(int.Parse(tokens[1]));
                         break;
                     case "spawnradius2":
-                        spawnradius2 = int.Parse(tokens[1]);
+                        GameState.SetSpawnRadius2(int.Parse(tokens[1]));
                         break;
                     case "player_seed":
-                        playerSeed = int.Parse(tokens[1]);
+                        GameState.SetPlayerSeed(int.Parse(tokens[1]));
                         break;
                     default:
                         throw new Exception("Unknown setup input token: '" + key + "'");
                 }
             }
-
-            state = new GameState(mapWidth, mapHeight, totalNumberOfTurns, turntime, loadtime, viewradius2, attackradius2, spawnradius2, playerSeed);
         }
 
         // parse engine input and update the game state
@@ -128,29 +118,29 @@ namespace Ants
                     switch (tokens[0])
                     {
                         case "a":
-                            state.AddAnt(row, col, int.Parse(tokens[3]));
+                            GameState.AddAnt(row, col, int.Parse(tokens[3]));
                             break;
                         case "f":
-                            state.AddFood(row, col);
+                            GameState.AddFood(row, col);
                             break;
                         case "r":
-                            state.RemoveFood(row, col);
+                            GameState.RemoveFood(row, col);
                             break;
                         case "w":
-                            state.AddWater(row, col);
+                            GameState.AddWater(row, col);
                             break;
                         case "d":
-                            state.DeadAnt(row, col);
+                            GameState.DeadAnt(row, col);
                             break;
                         case "h":
-                            state.AntHill(row, col, int.Parse(tokens[3]));
+                            GameState.AntHill(row, col, int.Parse(tokens[3]));
                             break;
                         default:
                             throw new Exception("Unknown update input token: '" + tokens[0] + "'");
                     }
                 }
                 else if (tokens[0] == "turn")
-                    state.SetTurn(int.Parse(tokens[1]));
+                    GameState.SetTurn(int.Parse(tokens[1]));
 
                 else
                     throw new Exception("Unknown or invalid update input token: '" + line + "'");

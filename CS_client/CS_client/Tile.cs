@@ -61,25 +61,25 @@ namespace Ants
             this.Type = type;
         }
 
-        public GameObject[] GetObjectsOnTile(GameState state)
+        public GameObject[] GetObjectsOnTile()
         {
             List<GameObject> objects = new List<GameObject>();
 
-            for (int i = 0; i < state.FoodTiles.Count; i++)
-                if (state.FoodTiles[i].Row == this.Row && state.FoodTiles[i].Col == this.Col)
-                    objects.Add(state.FoodTiles[i]);
-            for (int i = 0; i < state.EnemyAnts.Count; i++)
-                if (state.EnemyAnts[i].Row == this.Row && state.EnemyAnts[i].Col == this.Col)
-                    objects.Add(state.EnemyAnts[i]);
-            for (int i = 0; i < state.EnemyHills.Count; i++)
-                if (state.EnemyHills[i].Row == this.Row && state.EnemyHills[i].Col == this.Col)
-                    objects.Add(state.EnemyHills[i]);
-            for (int i = 0; i < state.MyAnts.Count; i++)
-                if (state.MyAnts[i].Row == this.Row && state.MyAnts[i].Col == this.Col)
-                    objects.Add(state.MyAnts[i]);
-            for (int i = 0; i < state.MyHills.Count; i++)
-                if (state.MyHills[i].Row == this.Row && state.MyHills[i].Col == this.Col)
-                    objects.Add(state.MyHills[i]);
+            for (int i = 0; i < GameState.FoodTiles.Count; i++)
+                if (GameState.FoodTiles[i].Row == this.Row && GameState.FoodTiles[i].Col == this.Col)
+                    objects.Add(GameState.FoodTiles[i]);
+            for (int i = 0; i < GameState.EnemyAnts.Count; i++)
+                if (GameState.EnemyAnts[i].Row == this.Row && GameState.EnemyAnts[i].Col == this.Col)
+                    objects.Add(GameState.EnemyAnts[i]);
+            for (int i = 0; i < GameState.EnemyHills.Count; i++)
+                if (GameState.EnemyHills[i].Row == this.Row && GameState.EnemyHills[i].Col == this.Col)
+                    objects.Add(GameState.EnemyHills[i]);
+            for (int i = 0; i < GameState.MyAnts.Count; i++)
+                if (GameState.MyAnts[i].Row == this.Row && GameState.MyAnts[i].Col == this.Col)
+                    objects.Add(GameState.MyAnts[i]);
+            for (int i = 0; i < GameState.MyHills.Count; i++)
+                if (GameState.MyHills[i].Row == this.Row && GameState.MyHills[i].Col == this.Col)
+                    objects.Add(GameState.MyHills[i]);
 
             return objects.ToArray();
         }

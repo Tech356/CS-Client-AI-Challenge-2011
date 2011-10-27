@@ -3,68 +3,85 @@ using System.Collections.Generic;
 
 namespace Ants
 {
-    public class GameState
+    public static class GameState
     {
-        public int MapWidth { get; private set; }
-        public int MapHeight { get; private set; }
+        public static int MapWidth { get; private set; }
+        public static int MapHeight { get; private set; }
 
-        public int TotalNumberOfTurns { get; private set; }
-        public int CurrentTurnNumber { get; private set; }
-        public int MaxAllowedLoadTime { get; private set; }
-        public int MaxAllowedTurnTime { get; private set; }
 
-        private DateTime turnStart;
-        public int TimeRemaining
+        public static int TotalNumberOfTurns { get; private set; }
+        public static int CurrentTurnNumber { get; private set; }
+        public static void SetTotalNumberOfTurns(int totalNumberOfTurns) { TotalNumberOfTurns = totalNumberOfTurns; }
+        public static void SetCurrentTurnNumber(int currentTurnNumber)
+        {
+            CurrentTurnNumber = currentTurnNumber;
+            StartNewTurn();
+        }
+
+        public static int MaxAllowedLoadTime { get; private set; }
+        public static int MaxAllowedTurnTime { get; private set; }
+        public static void SetMaxAllowedLoadTime(int maxAllowedLoadTime) { MaxAllowedLoadTime = maxAllowedLoadTime; }
+        public static void SetMaxAllowedTurnTime(int maxAllowedTurnTime) { MaxAllowedTurnTime = maxAllowedTurnTime; }
+
+        private static DateTime turnStart;
+        public static int TimeRemaining
         {
             get
             {
-                TimeSpan timeSpent = DateTime.Now - turnStart;
-                return MaxAllowedTurnTime - timeSpent.Milliseconds;
+                return MaxAllowedTurnTime - (DateTime.Now - turnStart).Milliseconds;
             }
         }
 
-        public int ViewRadius2 { get; private set; }
-        public int AttackRadius2 { get; private set; }
-        public int SpawnRadius2 { get; private set; }
-        public int PlayerSeed { get; private set; }
+        public static int ViewRadius2 { get; private set; }
+        public static int AttackRadius2 { get; private set; }
+        public static int SpawnRadius2 { get; private set; }
+        public static void SetViewRadius2(int viewRadius2) { ViewRadius2 = viewRadius2; }
+        public static void SetAttackRadius2(int attackRadius2) { AttackRadius2 = attackRadius2; }
+        public static void SetSpawnRadius2(int spawnRadius2) { SpawnRadius2 = spawnRadius2; }
 
-        public List<Ant> MyAnts { get; private set; }
-        public List<AntHill> MyHills { get; private set; }
-        public List<Ant> EnemyAnts { get; private set; }
-        public List<AntHill> EnemyHills { get; private set; }
-        public List<Food> FoodTiles { get; private set; }
+        public static int PlayerSeed { get; private set; }
+        public static void SetPlayerSeed(int playerSeed) { PlayerSeed = playerSeed; }
 
-        public Tile[,] map { get; private set; }
+        public static List<Ant> MyAnts { get; private set; }
+        public static List<AntHill> MyHills { get; private set; }
+        public static List<Ant> EnemyAnts { get; private set; }
+        public static List<AntHill> EnemyHills { get; private set; }
+        public static List<Food> FoodTiles { get; private set; }
 
-        public GameState(int width, int height, int totalNumberOfTurns, int turntime, int loadtime,
-                         int viewradius2, int attackradius2, int spawnradius2, int playerSeed)
+        public static Tile[,] map { get; private set; }
+
+        static GameState()
         {
-            this.MapWidth = width;
-            this.MapHeight = height;
+            MyAnts = new List<Ant>();
+            MyHills = new List<AntHill>();
+            EnemyAnts = new List<Ant>();
+            EnemyHills = new List<AntHill>();
+            FoodTiles = new List<Food>();
 
-            this.TotalNumberOfTurns = totalNumberOfTurns;
-            this.MaxAllowedLoadTime = loadtime;
-            this.MaxAllowedTurnTime = turntime;
+            InitMap();
+        }
 
-            this.ViewRadius2 = viewradius2;
-            this.AttackRadius2 = attackradius2;
-            this.SpawnRadius2 = spawnradius2;
-            this.PlayerSeed = playerSeed;
+        public static void SetMapWidth(int mapWidth)
+        {
+            MapWidth = mapWidth;
+            InitMap();
+        }
 
-            this.MyAnts = new List<Ant>();
-            this.MyHills = new List<AntHill>();
-            this.EnemyAnts = new List<Ant>();
-            this.EnemyHills = new List<AntHill>();
-            this.FoodTiles = new List<Food>();
+        public static void SetMapHeight(int mapHeight)
+        {
+            MapHeight = mapHeight;
+            InitMap();
+        }
 
-            map = new Tile[height, width];
-            for (int row = 0; row < height; row++)
-                for (int col = 0; col < width; col++)
+        static void InitMap()
+        {
+            map = new Tile[MapHeight, MapWidth];
+            for (int row = 0; row < MapHeight; row++)
+                for (int col = 0; col < MapWidth; col++)
                     map[row, col] = new Tile(row, col, TileType.Unseen);
         }
 
-        #region State mutators
-        public void StartNewTurn()
+        static void StartNewTurn()
         {
             // start timer
             turnStart = DateTime.Now;
@@ -77,14 +94,14 @@ namespace Ants
             //MAYBE: Maybe we should set these to Stale so we have an idea of where things are?
         }
 
-        public void SetTurn(int turnNumber)
+        public static void SetTurn(int turnNumber)
         {
-            this.CurrentTurnNumber = turnNumber;
+            CurrentTurnNumber = turnNumber;
         }
 
-        public void AddAnt(int row, int col, int team)
+        public static void AddAnt(int row, int col, int team)
         {
-            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            GameObject[] objects = map[row, col].GetObjectsOnTile();
             for (int i = 0; i < objects.Length; i++)
             {
                 Ant a = objects[i] as Ant;
@@ -102,9 +119,9 @@ namespace Ants
                 EnemyAnts.Add(newAnt);
         }
 
-        public void AddFood(int row, int col)
+        public static void AddFood(int row, int col)
         {
-            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            GameObject[] objects = map[row, col].GetObjectsOnTile();
             for (int i = 0; i < objects.Length; i++)
             {
                 Food f = objects[i] as Food;
@@ -115,7 +132,7 @@ namespace Ants
             FoodTiles.Add(new Food(row, col));
         }
 
-        public void RemoveFood(int row, int col)
+        public static void RemoveFood(int row, int col)
         {
             for (int i = 0; i < FoodTiles.Count; i++)
             {
@@ -127,14 +144,14 @@ namespace Ants
             }
         }
 
-        public void AddWater(int row, int col)
+        public static void AddWater(int row, int col)
         {
             map[row, col] = new Tile(row, col, TileType.Water);
         }
 
-        public void DeadAnt(int row, int col)
+        public static void DeadAnt(int row, int col)
         {
-            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            GameObject[] objects = map[row, col].GetObjectsOnTile();
             for (int i = 0; i < objects.Length; i++)
             {
                 Ant a = objects[i] as Ant;
@@ -148,9 +165,9 @@ namespace Ants
             // ignore unknown dead ants
         }
 
-        public void AntHill(int row, int col, int team)
+        public static void AntHill(int row, int col, int team)
         {
-            GameObject[] objects = map[row, col].GetObjectsOnTile(this);
+            GameObject[] objects = map[row, col].GetObjectsOnTile();
             for (int i = 0; i < objects.Length; i++)
             {
                 AntHill a = objects[i] as AntHill;
@@ -167,7 +184,6 @@ namespace Ants
             else
                 EnemyHills.Add(hill);
         }
-        #endregion
 
         /// <summary>
         /// Gets whether <paramref name="location"/> is passable or not.
@@ -175,7 +191,7 @@ namespace Ants
         /// <param name="location">The location to check.</param>
         /// <returns><c>true</c> if the location is not water, <c>false</c> otherwise.</returns>
         /// <seealso cref="GetIsUnoccupied"/>
-        public bool GetIsPassable(Location location)
+        public static bool GetIsPassable(Location location)
         {
             return map[location.Row, location.Col].Type != TileType.Water;
         }
@@ -185,12 +201,12 @@ namespace Ants
         /// </summary>
         /// <param name="location">The location to check.</param>
         /// <returns><c>true</c> if the location is passable and does not contain an ant, <c>false</c> otherwise.</returns>
-        public bool GetIsUnoccupied(Location location)
+        public static bool GetIsUnoccupied(Location location)
         {
             if (!GetIsPassable(location))
                 return false;
 
-            GameObject[] objects = map[location.Row, location.Col].GetObjectsOnTile(this);
+            GameObject[] objects = map[location.Row, location.Col].GetObjectsOnTile();
             for (int i = 0; i < objects.Length; i++)
             {
                 Ant a = objects[i] as Ant;
@@ -207,15 +223,15 @@ namespace Ants
         /// <param name="location">The starting location.</param>
         /// <param name="direction">The direction to move.</param>
         /// <returns>The new location, accounting for wrap around.</returns>
-        public Location GetDestination(Location location, Direction direction)
+        public static Location GetDestination(Location location, Direction direction)
         {
             Location delta = Location.GetDelta(direction);
 
-            int row = (location.Row + delta.Row) % this.MapHeight;
-            if (row < 0) row += this.MapHeight; // because the modulo of a negative number is negative
+            int row = (location.Row + delta.Row) % MapHeight;
+            if (row < 0) row += MapHeight; // because the modulo of a negative number is negative
 
-            int col = (location.Col + delta.Col) % this.MapWidth;
-            if (col < 0) col += this.MapWidth;
+            int col = (location.Col + delta.Col) % MapWidth;
+            if (col < 0) col += MapWidth;
 
             return new Location(row, col);
         }
@@ -226,13 +242,13 @@ namespace Ants
         /// <param name="loc1">The first location to measure with.</param>
         /// <param name="loc2">The second location to measure with.</param>
         /// <returns>The distance between <paramref name="loc1"/> and <paramref name="loc2"/></returns>
-        public int GetDistance(Tile loc1, Tile loc2)
+        public static int GetDistance(Tile loc1, Tile loc2)
         {
             int d_row = Math.Abs(loc1.Row - loc2.Row);
-            d_row = Math.Min(d_row, this.MapHeight - d_row);
+            d_row = Math.Min(d_row, MapHeight - d_row);
 
             int d_col = Math.Abs(loc1.Col - loc2.Col);
-            d_col = Math.Min(d_col, this.MapWidth - d_col);
+            d_col = Math.Min(d_col, MapWidth - d_col);
 
             return d_row + d_col;
         }
@@ -243,59 +259,59 @@ namespace Ants
         /// <param name="loc1">The location to start from.</param>
         /// <param name="loc2">The location to determine directions towards.</param>
         /// <returns>The 1 or 2 closest directions from <paramref name="loc1"/> to <paramref name="loc2"/></returns>
-        public ICollection<Direction> GetDirections(Tile loc1, Tile loc2)
+        public static ICollection<Direction> GetDirections(Tile loc1, Tile loc2)
         {
             List<Direction> directions = new List<Direction>();
 
             if (loc1.Row < loc2.Row)
             {
-                if (loc2.Row - loc1.Row >= this.MapHeight / 2)
+                if (loc2.Row - loc1.Row >= MapHeight / 2)
                     directions.Add(Direction.North);
-                if (loc2.Row - loc1.Row <= this.MapHeight / 2)
+                if (loc2.Row - loc1.Row <= MapHeight / 2)
                     directions.Add(Direction.South);
             }
             if (loc2.Row < loc1.Row)
             {
-                if (loc1.Row - loc2.Row >= this.MapHeight / 2)
+                if (loc1.Row - loc2.Row >= MapHeight / 2)
                     directions.Add(Direction.South);
-                if (loc1.Row - loc2.Row <= this.MapHeight / 2)
+                if (loc1.Row - loc2.Row <= MapHeight / 2)
                     directions.Add(Direction.North);
             }
 
             if (loc1.Col < loc2.Col)
             {
-                if (loc2.Col - loc1.Col >= this.MapWidth / 2)
+                if (loc2.Col - loc1.Col >= MapWidth / 2)
                     directions.Add(Direction.West);
-                if (loc2.Col - loc1.Col <= this.MapWidth / 2)
+                if (loc2.Col - loc1.Col <= MapWidth / 2)
                     directions.Add(Direction.East);
             }
             if (loc2.Col < loc1.Col)
             {
-                if (loc1.Col - loc2.Col >= this.MapWidth / 2)
+                if (loc1.Col - loc2.Col >= MapWidth / 2)
                     directions.Add(Direction.East);
-                if (loc1.Col - loc2.Col <= this.MapWidth / 2)
+                if (loc1.Col - loc2.Col <= MapWidth / 2)
                     directions.Add(Direction.West);
             }
 
             return directions;
         }
 
-        public bool GetIsVisible(Location loc)
+        public static bool GetIsVisible(Location loc)
         {
             List<Location> offsets = new List<Location>();
-            int squares = (int)Math.Floor(Math.Sqrt(this.ViewRadius2));
+            int squares = (int)Math.Floor(Math.Sqrt(ViewRadius2));
             for (int r = -1 * squares; r <= squares; ++r)
             {
                 for (int c = -1 * squares; c <= squares; ++c)
                 {
                     int square = r * r + c * c;
-                    if (square < this.ViewRadius2)
+                    if (square < ViewRadius2)
                     {
                         offsets.Add(new Location(r, c));
                     }
                 }
             }
-            foreach (Ant ant in this.MyAnts)
+            foreach (Ant ant in MyAnts)
             {
                 foreach (Location offset in offsets)
                 {
@@ -308,7 +324,6 @@ namespace Ants
             }
             return false;
         }
-
     }
 }
 

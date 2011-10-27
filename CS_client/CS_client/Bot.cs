@@ -4,7 +4,7 @@ namespace Ants
 {
     public abstract class Bot
     {
-        public abstract void DoTurn(GameState state);
+        public abstract void DoTurn();
 
         public abstract void Init();
     }
