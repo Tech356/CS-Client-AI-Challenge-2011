@@ -42,17 +42,19 @@ namespace Ants
                     }
                 }
             }
+#if Debug
             catch (Exception e)
             {
-#if DEBUG
                 StreamWriter sw = File.CreateText("Exception_Debug_" + DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss") + ".log");
                 sw.WriteLine("Turn Number: " + GameState.CurrentTurnNumber);
                 sw.WriteLine();
                 sw.WriteLine(e);
                 sw.Close();
-#endif
-            }
 
+            }
+#else
+            catch (Exception) { }
+#endif
         }
 
         // parse initial input and setup starting game state
