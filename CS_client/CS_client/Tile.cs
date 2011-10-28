@@ -66,19 +66,19 @@ namespace Ants
             List<GameObject> objects = new List<GameObject>();
 
             for (int i = 0; i < GameState.FoodTiles.Count; i++)
-                if (GameState.FoodTiles[i].Row == this.Row && GameState.FoodTiles[i].Col == this.Col)
+                if (GameState.FoodTiles[i].Location.Row == this.Row && GameState.FoodTiles[i].Location.Col == this.Col)
                     objects.Add(GameState.FoodTiles[i]);
             for (int i = 0; i < GameState.EnemyAnts.Count; i++)
-                if (GameState.EnemyAnts[i].Row == this.Row && GameState.EnemyAnts[i].Col == this.Col)
+                if (GameState.EnemyAnts[i].Location.Row == this.Row && GameState.EnemyAnts[i].Location.Col == this.Col)
                     objects.Add(GameState.EnemyAnts[i]);
             for (int i = 0; i < GameState.EnemyHills.Count; i++)
-                if (GameState.EnemyHills[i].Row == this.Row && GameState.EnemyHills[i].Col == this.Col)
+                if (GameState.EnemyHills[i].Location.Row == this.Row && GameState.EnemyHills[i].Location.Col == this.Col)
                     objects.Add(GameState.EnemyHills[i]);
             for (int i = 0; i < GameState.MyAnts.Count; i++)
-                if (GameState.MyAnts[i].Row == this.Row && GameState.MyAnts[i].Col == this.Col)
+                if (GameState.MyAnts[i].Location.Row == this.Row && GameState.MyAnts[i].Location.Col == this.Col)
                     objects.Add(GameState.MyAnts[i]);
             for (int i = 0; i < GameState.MyHills.Count; i++)
-                if (GameState.MyHills[i].Row == this.Row && GameState.MyHills[i].Col == this.Col)
+                if (GameState.MyHills[i].Location.Row == this.Row && GameState.MyHills[i].Location.Col == this.Col)
                     objects.Add(GameState.MyHills[i]);
 
             return objects.ToArray();

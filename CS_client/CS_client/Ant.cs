@@ -19,14 +19,14 @@ namespace Ants
 
         public void Move(Direction direction)
         {
-            System.Console.Out.WriteLine("o {0} {1} {2}", this.Row, this.Col, (Char)direction);
-            this.Col = (this.Col + Location.GetDelta(direction).Col + GameState.MapWidth) % GameState.MapWidth;
-            this.Row = (this.Row + Location.GetDelta(direction).Row + GameState.MapHeight) % GameState.MapHeight;
+            System.Console.Out.WriteLine("o {0} {1} {2}", this.Location.Row, this.Location.Col, (Char)direction);
+            this.Location = new Location((this.Location.Col + Location.GetDelta(direction).Col + GameState.MapWidth) % GameState.MapWidth,
+                                         (this.Location.Row + Location.GetDelta(direction).Row + GameState.MapHeight) % GameState.MapHeight);
         }
 
         public override string ToString()
         {
-            return "{" + Row + ", " + Col + "|" + Team + "}";
+            return "Ant {" + this.Location.Row + ", " + this.Location.Col + "|" + Team + "}";
         }
     }
 }

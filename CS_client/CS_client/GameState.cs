@@ -130,7 +130,7 @@ namespace Ants
         {
             for (int i = 0; i < FoodTiles.Count; i++)
             {
-                if (FoodTiles[i].Row == row && FoodTiles[i].Col == col)
+                if (FoodTiles[i].Location.Row == row && FoodTiles[i].Location.Col == col)
                 {
                     FoodTiles.RemoveAt(i);
                     break;
@@ -309,8 +309,8 @@ namespace Ants
             {
                 foreach (Location offset in offsets)
                 {
-                    if ((ant.Col + offset.Col) == loc.Col &&
-                        (ant.Row + offset.Row) == loc.Row)
+                    if ((ant.Location.Col + offset.Col) == loc.Col &&
+                        (ant.Location.Row + offset.Row) == loc.Row)
                     {
                         return true;
                     }
