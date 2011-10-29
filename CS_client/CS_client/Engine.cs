@@ -12,13 +12,18 @@ namespace Ants
 
         public static void PlayGame(Bot bot)
         {
+            PlayGame(bot, Console.In);
+        }
+
+        public static void PlayGame(Bot bot, TextReader inputTextReader)
+        {
             List<string> input = new List<string>();
 
             try
             {
                 while (true)
                 {
-                    string line = System.Console.In.ReadLine().Trim().ToLower();
+                    string line = inputTextReader.ReadLine().Trim().ToLower();
 
                     switch (line)
                     {
@@ -42,7 +47,7 @@ namespace Ants
                     }
                 }
             }
-#if Debug
+#if DEBUG
             catch (Exception e)
             {
                 StreamWriter sw = File.CreateText("Exception_Debug_" + DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss") + ".log");
