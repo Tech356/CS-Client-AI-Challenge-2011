@@ -35,6 +35,16 @@ namespace Ants
             throw new Exception("Unknown Direction Passed to GetDelta: '" + direction + "'");
         }
 
+        public static bool operator ==(Location a, Location b)
+        {
+            return (a.Col == b.Col && a.Row == b.Row);
+        }
+
+        public static bool operator !=(Location a, Location b)
+        {
+            return (a.Col != b.Col || a.Row != b.Row);
+        }
+
         public override string ToString()
         {
             return "{" + Row + ", " + Col + "}";
