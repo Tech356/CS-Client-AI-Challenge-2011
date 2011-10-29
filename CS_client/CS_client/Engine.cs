@@ -154,6 +154,7 @@ namespace Ants
                 else
                     throw new Exception("Unknown or invalid update input token: '" + line + "'");
             }
+            GameState.UpdateMap();
         }
 
         private static void FinishTurn()

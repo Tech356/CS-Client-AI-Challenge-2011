@@ -93,6 +93,16 @@ namespace Ants
             //MAYBE: Maybe we should set these to Stale so we have an idea of where things are?
         }
 
+        public static void UpdateMap()
+        {
+            Location[] visible = GetEveryVisibleSquare();
+            for (int i = 0; i < visible.Length; i++)
+            {
+                if (map[visible[i].Row, visible[i].Col].Type == TileType.Unseen)
+                    map[visible[i].Row, visible[i].Col] = new Tile(visible[i].Row, visible[i].Col, TileType.Land);
+            }
+        }
+
         public static void AddAnt(int row, int col, int team)
         {
             GameObject[] objects = map[row, col].GetObjectsOnTile();
@@ -292,7 +302,19 @@ namespace Ants
 
         public static bool GetIsVisible(Location loc)
         {
+            Location[] offsets = GetEveryVisibleSquare();
+
+            for (int i = 0; i < offsets.Length; i++)
+                if (offsets[i].Row == loc.Row && offsets[i].Col == loc.Col)
+                    return true;
+
+            return false;
+        }
+
+        public static Location[] GetEveryVisibleSquare()
+        {
             List<Location> offsets = new List<Location>();
+            List<Location> visibleSquares = new List<Location>();
             int squares = (int)Math.Floor(Math.Sqrt(ViewRadius2));
             for (int r = -1 * squares; r <= squares; ++r)
             {
@@ -305,18 +327,20 @@ namespace Ants
                     }
                 }
             }
-            foreach (Ant ant in MyAnts)
-            {
-                foreach (Location offset in offsets)
+
+            for (int i = 0; i < MyAnts.Count; i++)
+                for (int j = 0; j < offsets.Count; j++)
                 {
-                    if ((ant.Location.Col + offset.Col) == loc.Col &&
-                        (ant.Location.Row + offset.Row) == loc.Row)
-                    {
-                        return true;
-                    }
+                    Location offset = new Location(MyAnts[i].Location.Row + offsets[j].Row, MyAnts[i].Location.Col + offsets[j].Col);
+                    offset.CorrectLocationForMapWrapAround();
+                    visibleSquares.Add(offset);
                 }
-            }
-            return false;
+
+            List<Location> finalList = new List<Location>();
+            for (int i = 0; i < visibleSquares.Count; i++)
+                if (!finalList.Contains(visibleSquares[i]))
+                    finalList.Add(visibleSquares[i]);
+            return finalList.ToArray();
         }
     }
 }
