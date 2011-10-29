@@ -3,34 +3,6 @@ using System.Collections.Generic;
 
 namespace Ants
 {
-    public struct Location
-    {
-        public int Row;
-        public int Col;
-
-        public Location(int row, int col)
-        {
-            Row = row;
-            Col = col;
-        }
-
-        public static Location GetDelta(Direction direction)
-        {
-            switch (direction)
-            {
-                case Direction.North:
-                    return new Location(-1, 0);
-                case Direction.South:
-                    return new Location(1, 0);
-                case Direction.East:
-                    return new Location(0, 1);
-                case Direction.West:
-                    return new Location(0, -1);
-            }
-            throw new Exception("Unknown Direction Passed to GetDelta: '" + direction + "'");
-        }
-    }
-
     public enum TileType
     {
         Land,
@@ -85,4 +57,3 @@ namespace Ants
         }
     }
 }
-
