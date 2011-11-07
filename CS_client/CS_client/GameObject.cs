@@ -12,7 +12,7 @@ namespace Ants
 
         public GameObject(int row, int col)
         {
-            // Create a new Location so we aren't just referencing an external Location
+            // Create a new Location so we aren't just referencing an external Location object
             this.Location = new Location(row, col);
         }
     }
