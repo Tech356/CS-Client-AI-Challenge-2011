@@ -39,7 +39,7 @@ namespace Ants
 
         public override string ToString()
         {
-            return "Ant {" + this.Location.Row + ", " + this.Location.Col + "|" + Team + "}";
+            return "Ant {" + this.Location.Row + ", " + this.Location.Col + "| Team:" + this.Team + ", Alive:"+ this.isAlive +"}";
         }
     }
 }
