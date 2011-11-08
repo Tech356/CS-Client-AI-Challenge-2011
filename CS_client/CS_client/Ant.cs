@@ -19,9 +19,13 @@ namespace Ants
 
         public bool Move(Direction direction)
         {
+            Location MoveToLocation = GameState.GetDestination(this.Location, direction);
+
+            if (GameState.map[MoveToLocation.Row, MoveToLocation.Col].Type == TileType.Water)
+                return false;
+
             // if we move to a location where another ant is, both ants will die
             // we don't want to kill our own ants
-            Location MoveToLocation = GameState.GetDestination(this.Location, direction);
             for (int i = 0; i < GameState.MyAnts.Count; i++)
                 if (GameState.MyAnts[i].Location == MoveToLocation)
                     return false;

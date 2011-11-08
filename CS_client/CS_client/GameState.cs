@@ -159,7 +159,7 @@ namespace Ants
             for (int i = 0; i < objects.Length; i++)
             {
                 Ant a = objects[i] as Ant;
-                if (a != null)
+                if (a != null && a.isAlive)
                 {
                     a.isAlive = false;
                     return;
